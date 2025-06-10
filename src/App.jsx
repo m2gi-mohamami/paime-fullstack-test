@@ -1,8 +1,26 @@
-import { useState } from 'react'
-import './App.css'
-
+import { useState } from 'react';
+import './App.css';
+function verifierSalaireNetFaible(netSalary, grossSalary) {
+  //Salaire net faible : si netSalary est inférieur à 50 % de grossSalary
+  if (netSalary < 0.5 * grossSalary) {
+    console.warn("Alerte: Salaire net faible : si netSalary est inférieur à 50 % de grossSalary.");
+    return false;
+  }
+  //console.log("Salaire net valide.");
+  return true;
+}
+function verifierDeductions(deductions,grossSalary) {
+  //Prélèvements élevés : si le total des deductions.amount dépasse 40 % de grossSalary
+  const totalDeductions = deductions.reduce((total, deduction) => total + deduction.amount, 0);
+  if (totalDeductions > 0.4 * grossSalary) {
+    console.warn("Alerte: Prélèvements élevés : si le total des deductions.amount dépasse 40 % de grossSalary.");
+    return false;
+  }
+  //console.log("Deductions valides.");
+  return true;
+}
 function App() {
-  const salaries =useState( [
+  const [salaries]  =useState( [
     {
     "employeeName": "Jean Dupont",
     "employeeId": "EMP123456",
@@ -11,8 +29,8 @@ function App() {
       "year": 2025
     },
     "contractType": "CDI",
-    "grossSalary": 3200.00,
-    "netSalary": 1950.00,
+    "grossSalary": 3200.00,//2290
+    "netSalary": 1950.00,//1250 pour tester
     "deductions": [
       {
         "label": "Sécurité sociale",
@@ -59,17 +77,29 @@ function App() {
       "bic": "AGRIFRPPXXX"
     }
 }])
- console.log(salaries)
+  const salary = salaries[0]
+  // Calcul des avertissements 
+  const isNetSalaryValid = verifierSalaireNetFaible(salary.netSalary, salary.grossSalary);
+  const areDeductionsValid = verifierDeductions(salary.deductions, salary.grossSalary);
+  
   return (
     <>
-    
-     <div className='App'>
-        <h2>{salaries[0][0].employeeName}</h2>
-        <p>Période: {salaries[0][0].period.month} / {salaries[0][0].period.year}</p>
-        <p>Type de contrat: {salaries[0][0].contractType}</p>
-        <p>Salaire brut: {salaries[0][0].grossSalary} €</p>
-        <p>Salaire net: {salaries[0][0].netSalary} €</p>
-       
+
+     <div className='App' style={{textAlign: "center" ,backgroundColor: "#f0f0f0", padding: "20px", borderRadius: "10px"}}>
+
+        <h2>{salary.employeeName}</h2>
+        <p>Période: {salary.period.month}  {salary.period.year}</p>
+        <p>Type de contrat: {salary.contractType}</p>
+        <p>Salaire brut: {salary.grossSalary} €</p>
+        <p>Salaire net: {salary.netSalary} €</p>
+        <h2>Vérification</h2>
+        <p style={{color :isNetSalaryValid ? "green" : "red"}}>
+          Vérification du salaire net faible: {isNetSalaryValid ? "Valid" : "Alerte"}
+        </p>
+        <p style={{color :areDeductionsValid ? "green" : "red"}}>
+          Vérification des prélèvements élevés:{ areDeductionsValid ? "Valid" : "Alerte"}
+        </p>
+
       </div>
       
    
